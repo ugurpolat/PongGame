@@ -1,0 +1,62 @@
+body {
+  box-sizing: border-box;
+  background-color: #ececec;
+}
+
+header,
+section {
+  text-align: center;
+  margin: 0 auto;
+}
+
+#pong-table {
+  margin: auto;
+  width: 900px;
+  height: 600px;
+  background-color: #000;
+  position: relative;
+}
+
+.stick {
+  width: 10px;
+  height: 80px;
+  background-color: #fff;
+  position: absolute;
+  top: 260px;
+}
+
+#stick-1 {
+  left: 20px;
+}
+
+#stick-2 {
+  right: 20px;
+}
+
+.ball {
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  top: 300px;
+  left: 450px;
+  position: absolute;
+}
+
+#net {
+  width: 0px;
+  height: 600px;
+  border-left: 4px dashed #808080;
+  position: absolute;
+  top: 0;
+  left: 50%;
+}
+
+#start-game {
+  width: 10%;
+  height: auto;
+  font-size: 1.2rem;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: 45%;
+}
