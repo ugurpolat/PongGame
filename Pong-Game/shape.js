@@ -6,7 +6,7 @@ class Shape {
     this.speed = speed;
   }
 
-  static createElement() {
+  static createStick() {
     const gameZone = document.getElementById("pong-table");
 
     const stick1 = document.createElement("div");
