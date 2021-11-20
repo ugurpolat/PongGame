@@ -33,14 +33,14 @@ section {
   right: 20px;
 }
 
-.ball {
+/* .ball {
   width: 10px;
   height: 10px;
   background-color: #fff;
   top: 300px;
   left: 450px;
   position: absolute;
-}
+} */
 
 #net {
   width: 0px;

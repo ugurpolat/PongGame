@@ -1,24 +1,13 @@
-class Ball extends Shape {
-  constructor(width, height, position, left, topSpeed, leftSpeed) {
-    super(width, height, position);
+class Ball {
+  constructor(ballID, width, height, top, left) {
+    this.ballID = ballID;
+    this.width = width;
+    this.height = height;
+    this.top = top;
     this.left = left;
-    this.topSpeed = topSpeed;
-    this.leftSpeed = leftSpeed;
+    this.ball_out_of_stick = false;
+    this.isBallActive = true;
 
-    this.loop();
-  }
-
-  createBall() {
-    const gameZone = document.getElementById("pong-table");
-
-    const ball = document.createElement("div");
-
-    ball.className = "ball";
-
-    gameZone.appendChild(ball);
-  }
-
-  rollBall() {
     let side;
 
     if (Math.random() < 0.5) {
@@ -32,29 +21,101 @@ class Ball extends Shape {
       side * (Math.random() * 2 * Math.sqrt(3) - Math.sqrt(3)) * ballSpeed;
     this.leftSpeed = side * ballSpeed;
 
-    this.ballMovement();
+    this.startLife();
+  }
+
+  createHTMLBall() {
+    const gameZone = document.getElementById("pong-table");
+    const ball = document.createElement("div");
+
+    ball.id = this.ballID;
+    ball.style.width = this.width + "px";
+    ball.style.height = this.height + "px";
+    ball.style.top = this.top + "px";
+    ball.style.left = this.left + "px";
+
+    ball.style.backgroundColor = "white";
+    ball.style.position = "absolute";
+
+    gameZone.appendChild(ball);
+  }
+
+  removeHTMLElement() {
+    const currentBall = document.getElementById(this.ballID);
+    currentBall.remove();
+  }
+
+  loop() {
+    if (this.isBallActive) {
+      const currentBall = document.getElementById(this.ballID);
+
+      this.top += this.topSpeed;
+      this.left += this.leftSpeed;
+
+      this.checkBoundaries();
+      this.checkStickCollision();
+
+      currentBall.style.left = this.left + "px";
+      currentBall.style.top = this.top + "px";
+    }
   }
 
   ballMovement() {
-    this.position += this.topSpeed;
-    this.left += this.leftSpeed;
-
-    // this.checkBoundaries();
-    //console.log(this.position, this.left);
+    window.setInterval(this.loop.bind(this), 1000 / 60);
   }
 
   checkBoundaries() {
-    if (this.position <= 0 || this.position + this.height >= heightTable) {
+    if (this.top <= 0 || this.top + this.height >= heightTable) {
       this.topSpeed = -this.topSpeed;
     }
   }
 
-  loop() {
-    this.createBall();
-    this.rollBall();
+  checkStickCollision() {
+    if (this.left <= stick1.width + stickOffset) {
+      if (this.ball_out_of_stick == false) {
+        if (
+          this.top + this.height > stick1.top &&
+          this.top < stick1.top + stick1.height
+        ) {
+          this.leftSpeed = -this.leftSpeed;
+        } else {
+          this.ball_out_of_stick = true;
+        }
+      } else {
+        if (this.left + this.width < 0) {
+          // destroy this ball object
+          if (this.isBallActive) {
+            this.removeHTMLElement();
+            this.isBallActive = false;
+          }
+        }
+      }
+    }
 
-    window.setInterval(function move() {
-      this.ballMovement();
-    }, 1000 / 60);
+    if (this.left + this.width >= widthTable - stick2.width - stickOffset) {
+      if (this.ball_out_of_stick == false) {
+        if (
+          this.top + this.height > stick2.top &&
+          this.top < stick2.top + stick2.height
+        ) {
+          this.leftSpeed = -this.leftSpeed;
+        } else {
+          this.ball_out_of_stick = true;
+        }
+      } else {
+        if (this.left > widthTable) {
+          // destroy this ball object
+          if (this.isBallActive) {
+            this.removeHTMLElement();
+            this.isBallActive = false;
+          }
+        }
+      }
+    }
+  }
+
+  startLife() {
+    this.createHTMLBall();
+    this.ballMovement();
   }
 }

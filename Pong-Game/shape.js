@@ -1,8 +1,8 @@
 class Shape {
-  constructor(width, height, position, speed) {
+  constructor(width, height, top, speed) {
     this.width = width;
     this.height = height;
-    this.position = position;
+    this.top = top;
     this.speed = speed;
   }
 

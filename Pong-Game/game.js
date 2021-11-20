@@ -1,9 +1,19 @@
 const gameZone = document.getElementById("pong-table");
 const startButton = document.getElementById("start-game");
 
+const leftZone = [];
+const rightZone = [];
+const balls = [];
+
+let ball_id = 0;
+let active_balls = [];
+let isGameStart = false;
+let stickspeedIncrease = 10;
+let stickOffset = 20;
+
 const stick1 = new Shape(10, 80, 260, 0);
-const stick2 = new Shape(10, 80, 60, 0);
-let ball;
+const stick2 = new Shape(10, 80, 260, 0);
+
 const widthTable = parseInt(
   getComputedStyle(gameZone).getPropertyValue("width")
 );
@@ -11,19 +21,29 @@ const heightTable = parseInt(
   getComputedStyle(gameZone).getPropertyValue("height")
 );
 
-let balls = [];
-let isGameStart = false;
-let stickspeedIncrease = 10;
-
 function eventListeners() {
   startButton.addEventListener("click", start);
+}
+
+function createBallObject() {
+  let ballDimension = parseInt(Math.random() * 30);
+  let ball = new Ball(
+    "ball" + ball_id.toString(),
+    ballDimension,
+    ballDimension,
+    300,
+    450,
+    10,
+    0
+  );
+  ball_id += 1;
+  active_balls.push(ball);
 }
 
 function start() {
   startButton.setAttribute("style", "display: none");
   Shape.createStick();
-  ball = new Ball(10, 10, 300, 450, 10, 0);
-  balls.push(ball);
+  createBallObject();
   isGameStart = true;
 }
 
@@ -40,8 +60,7 @@ function keyDown() {
     } else if (key === "S" || key === "s") {
       stick2.speed = stickspeedIncrease;
     } else if (key === " ") {
-      let ball = new Ball(10, 10, 300, 450, 10, 0);
-      balls.push();
+      createBallObject();
     }
   });
 }
@@ -63,45 +82,40 @@ function keyUp() {
 }
 
 function stickBoundaries() {
-  if (stick1.position <= 0) {
-    stick1.position = 0;
+  if (stick1.top <= 0) {
+    stick1.top = 0;
   }
 
-  if (stick1.position + stick1.height >= heightTable) {
-    stick1.position = 520;
+  if (stick1.top + stick1.height >= heightTable) {
+    stick1.top = 520;
   }
 
-  if (stick2.position <= 0) {
-    stick2.position = 0;
+  if (stick2.top <= 0) {
+    stick2.top = 0;
   }
 
-  if (stick2.position + stick2.height >= heightTable) {
-    stick2.position = 520;
+  if (stick2.top + stick2.height >= heightTable) {
+    stick2.top = 520;
   }
 }
 function loop() {
   window.setInterval(function show() {
     if (isGameStart) {
-      stick1.position += stick1.speed;
-      stick2.position += stick2.speed;
+      stick1.top += stick1.speed;
+      stick2.top += stick2.speed;
 
       stickBoundaries();
 
       const stick_1 = document.getElementById("stick-1");
       const stick_2 = document.getElementById("stick-2");
+      const gameBalls = document.getElementsByClassName(".ball");
 
-      stick_1.setAttribute("style", `top:${parseInt(stick1.position)}px`);
-      stick_2.setAttribute("style", `top:${parseInt(stick2.position)}px`);
+      stick_1.setAttribute("style", `top:${parseInt(stick1.top)}px`);
+      stick_2.setAttribute("style", `top:${parseInt(stick2.top)}px`);
 
-      for (let i = 0; i <= balls.length; i++) {
-        const balls = document.querySelectorAll(".ball");
-
-        balls.forEach(function name(ball) {
-          ball.setAttribute("style", `top:${parseInt(ball.position)}px`);
-          ball.setAttribute("style", `left:${parseInt(ball.left)}px`);
-        });
-        // balls[i].setAttribute("style", `top:${parseInt(balls[i].position)}px`);
-        // balls[i].setAttribute("style", `left:${parseInt(balls[i].left)}px`);
+      //Clean inactive balls
+      for (let i = 0; i < active_balls.length; i++) {
+        if (active_balls[i].isBallActive === false) active_balls.splice(i, 1);
       }
     }
   }, 1000 / 60);
