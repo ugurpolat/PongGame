@@ -1,9 +1,10 @@
 class Shape {
-  constructor(width, height, top, speed) {
+  constructor(width, height, top, speed, left) {
     this.width = width;
     this.height = height;
     this.top = top;
     this.speed = speed;
+    this.left = left;
   }
 
   static createStick() {

@@ -1,18 +1,14 @@
 const gameZone = document.getElementById("pong-table");
 const startButton = document.getElementById("start-game");
 
-const leftZone = [];
-const rightZone = [];
-const balls = [];
-
 let ball_id = 0;
 let active_balls = [];
 let isGameStart = false;
 let stickspeedIncrease = 10;
 let stickOffset = 20;
 
-const stick1 = new Shape(10, 80, 260, 0);
-const stick2 = new Shape(10, 80, 260, 0);
+const stick1 = new Shape(10, 80, 260, 0, 20);
+const stick2 = new Shape(10, 80, 260, 0, 880);
 
 const widthTable = parseInt(
   getComputedStyle(gameZone).getPropertyValue("width")
@@ -27,15 +23,7 @@ function eventListeners() {
 
 function createBallObject() {
   let ballDimension = parseInt(Math.random() * 30);
-  let ball = new Ball(
-    "ball" + ball_id.toString(),
-    ballDimension,
-    ballDimension,
-    300,
-    450,
-    10,
-    0
-  );
+  let ball = new Ball("ball" + ball_id.toString(), 10, 10, 300, 450, 10, 0);
   ball_id += 1;
   active_balls.push(ball);
 }
@@ -111,14 +99,57 @@ function loop() {
       const gameBalls = document.getElementsByClassName(".ball");
 
       stick_1.setAttribute("style", `top:${parseInt(stick1.top)}px`);
-      stick_2.setAttribute("style", `top:${parseInt(stick2.top)}px`);
+      // stick_2.setAttribute("style", `top:${parseInt(stick2.top)}px`);
 
       //Clean inactive balls
       for (let i = 0; i < active_balls.length; i++) {
         if (active_balls[i].isBallActive === false) active_balls.splice(i, 1);
       }
+
+      let rightZone = [];
+      for (let i = 0; i < active_balls.length; i++) {
+        if (active_balls[i].leftSpeed > 0) {
+          rightZone.push(active_balls[i]);
+        }
+      }
+
+      let distanceArray = [];
+      for (let i = 0; i < rightZone.length; i++) {
+        if (rightZone.length >= 1) {
+          let distance = getDistanceBetweenElements(rightZone[i], stick2);
+          distanceArray.push(distance);
+        }
+      }
+
+      let findMinDistance = Math.min(...distanceArray);
+      // console.log(findMinDistance);
+      let findMinDistanceIndex = distanceArray.indexOf(findMinDistance);
+      //console.log(findMinDistanceIndex);
+      if (findMinDistanceIndex >= 0) {
+        stick_2.setAttribute(
+          "style",
+          `top:${parseInt(rightZone[findMinDistanceIndex].top * 0.8)}px`
+        );
+      }
     }
   }, 1000 / 60);
+}
+
+function getDistanceBetweenElements(ball, stick) {
+  let ballPosition = getElementCenterPosition(ball);
+  let stickPosition = getElementCenterPosition(stick);
+
+  return Math.sqrt(
+    Math.pow(stickPosition.x - ballPosition.x, 2) +
+      Math.pow(stickPosition.y - ballPosition.y, 2)
+  );
+}
+
+function getElementCenterPosition(element) {
+  return {
+    x: element.left + element.width / 2,
+    y: element.top + element.height / 2,
+  };
 }
 
 function setEvents() {
